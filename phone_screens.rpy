@@ -1,56 +1,3 @@
-screen nvl(dialogue, items=None):
-    if phone_display_header["phone"]:
-        use phone_display(dialogue, items)
-    else:
-        window:
-            style "nvl_window"
-
-            has vbox:
-                spacing gui.nvl_spacing
-
-            ## Displays dialogue in either a vpgrid or the vbox.
-            if gui.nvl_height:
-
-                vpgrid:
-                    cols 1
-                    yinitial 1.0
-
-                    use nvl_dialogue(dialogue)
-
-            else:
-
-                use nvl_dialogue(dialogue)
-
-            ## Displays the menu, if given. The menu may be displayed incorrectly if
-            ## config.narrator_menu is set to True, as it is above.
-            for i in items:
-
-                textbutton i.caption:
-                    action i.action
-                    style "nvl_button"
-
-        add SideImage() xalign 0.0 yalign 1.0
-
-
-screen nvl_dialogue(dialogue):
-
-    for d in dialogue:
-
-        window:
-            id d.window_id
-
-            fixed:
-                yfit gui.nvl_height is None
-
-                if d.who is not None:
-
-                    text d.who:
-                        id d.who_id
-
-                text d.what:
-                    id d.what_id
-
-
 screen phone_messages(dialogue, items=None):
     $ prev_who = ""
     for d in dialogue:
@@ -67,14 +14,12 @@ screen phone_messages(dialogue, items=None):
                 at message_stay(d.who)
 
             if d.who is not None:
-                style d.who+"_message_window"
+                style d.who.lower()+"_message_window"
             else: #prevents it from crashing on reload when d.who is None
                 $ phone_display_header["phone"] = False
-            
             text d.what:
                 id d.what_id
         
-
 style phone_message_window:
     xfill False
     xpadding 22
@@ -83,15 +28,22 @@ style phone_message_window:
     xmaximum 300
     yminimum 50
 
+
 style mc_message_window is phone_message_window:
-    background Frame("gui/phone_display/mc_msg.png", Borders(26, 25, 26, 25))
-   
+    background Frame("gui/phone_display/button_hover.png", Borders(20, 20, 20, 20))
+
 style lark_message_window is phone_message_window:
-    background Frame("gui/phone_display/lark_msg.png", Borders(25, 25, 25, 25))
-    
+    background Frame("gui/phone_display/lark_msg.png", Borders(20, 20, 20, 20))
+
+style finn_message_window is phone_message_window:
+    background Frame("gui/phone_display/finn_msg.png", Borders(20, 20, 20, 20))
+
+style august_message_window is phone_message_window:
+    background Frame("gui/phone_display/august_msg.png", Borders(20, 20, 20, 20))
+
 style phone_message_body:
-    font "fonts/DUBAI-LIGHT.ttf"
-    line_spacing -15
+    font "fonts/Cabin-Regular.ttf"
+    line_spacing -4
     size 22
     slow_cps 0
 
@@ -102,22 +54,22 @@ style dr_message_body is phone_message_body:
     color "#ffffff"
 
 
-
 screen phone_display(dialogue, items=None):
     window at phone_stay:
-        if len(dialogue) == 1:
+        if len(dialogue) == phone_display_header["slide"] and not items: #first msg can't be a menu
             at phone_slide
 
         style "phone_display_window"
         text phone_display_header["clock"] style "phone_display_clock"
-        add phone_display_header["icon"] zoom 0.47 xpos 50 ypos 77
+        add phone_display_header["icon"] zoom 0.47 xpos 70 ypos 85 #this has to be inline bc of zoom
         text phone_display_header["name"] style "phone_display_name"
+        
         add "gui/phone_display/phone2.png" xpos 40 ypos 660
 
         viewport:
-            area (22, 130, 430, 520)
+            area (22, 145, 430, 500)
             mousewheel True
-            scrollbars "vertical" 
+            scrollbars "vertical" #"both"
             yinitial 1.0
 
             vbox:
@@ -138,8 +90,6 @@ screen phone_display(dialogue, items=None):
                                     text i.caption style "phone_display_choice_text"
 
 
-
-
 style phone_display_clock:
     font "fonts/DUBAI-REGULAR.ttf"
     size 22
@@ -149,14 +99,14 @@ style phone_display_clock:
 
 style phone_display_window:
     background Frame("gui/phone_display/phone1.png")
-    xsize 487
-    ysize 720
+    xsize 489
+    ysize 825
 
 style phone_display_name:
-    font "fonts/DUBAI-MEDIUM.ttf"
+    font "fonts/Cabin-Bold.ttf"
     size 30
-    xpos 120
-    ypos 73
+    xpos 150
+    ypos 87
 
 style phone_display_vbox: #this allows the sent txts to be on the right. no idea why
     xsize 440
@@ -170,14 +120,20 @@ style phone_display_choice:
     bottom_padding 15
 
 style lark_phone_display_choice is phone_display_choice:
-    background Frame("gui/phone_display/lark_choice_bg.png", Borders(25, 25, 25, 25))
+    background Frame("gui/phone_display/lark_choice_bg.png", Borders(20, 20, 20, 20))
+
+style finn_phone_display_choice is phone_display_choice:
+    background Frame("gui/phone_display/finn_choice_bg.png", Borders(20, 20, 20, 20))
+
+style august_phone_display_choice is phone_display_choice:
+    background Frame("gui/phone_display/august_choice_bg.png", Borders(20, 20, 20, 20))
 
 
 style phone_display_choice_button:
     background Frame("gui/phone_display/button.png")
     hover_background Frame("gui/phone_display/button_hover.png")
     xanchor 1.0
-    xpos 330
+    xpos 335
     xsize 324
     ysize 44
     xpadding 15
@@ -186,7 +142,7 @@ style phone_display_choice_button:
     activate_sound audio.phone_cont
 
 style phone_display_choice_text:
-    font "fonts/DUBAI-LIGHT.ttf"
+    font "fonts/Cabin-Regular.ttf"
     size 22
     xmaximum 300
     color "#aaaaaa"
