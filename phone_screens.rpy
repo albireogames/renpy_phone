@@ -35,12 +35,6 @@ style mc_message_window is phone_message_window:
 style lark_message_window is phone_message_window:
     background Frame("gui/phone_display/lark_msg.png", Borders(20, 20, 20, 20))
 
-style finn_message_window is phone_message_window:
-    background Frame("gui/phone_display/finn_msg.png", Borders(20, 20, 20, 20))
-
-style august_message_window is phone_message_window:
-    background Frame("gui/phone_display/august_msg.png", Borders(20, 20, 20, 20))
-
 style phone_message_body:
     font "fonts/Cabin-Regular.ttf"
     line_spacing -4
@@ -121,13 +115,6 @@ style phone_display_choice:
 
 style lark_phone_display_choice is phone_display_choice:
     background Frame("gui/phone_display/lark_choice_bg.png", Borders(20, 20, 20, 20))
-
-style finn_phone_display_choice is phone_display_choice:
-    background Frame("gui/phone_display/finn_choice_bg.png", Borders(20, 20, 20, 20))
-
-style august_phone_display_choice is phone_display_choice:
-    background Frame("gui/phone_display/august_choice_bg.png", Borders(20, 20, 20, 20))
-
 
 style phone_display_choice_button:
     background Frame("gui/phone_display/button.png")
