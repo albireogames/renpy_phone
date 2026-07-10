@@ -1,19 +1,20 @@
 init -20 python:
     phone_display_header = {
-        "phone": False,
-        "clock": "",
-        "icon" : "",
-        "name" : ""
+        "phone": False,    # True if the phone is currently replacing the nvl screen, False if not
+        "clock": "",       # the time displayed onscreen
+        "icon" : "",       # image displayed next to the character's name
+        "name" : "",       # name of the character you're texting
+        "slide": 1         # set this to an int >1 to allow that number of msgs to persist between phone sections
     }
 
 
 init -2 python:
 
     def phone_continue(event, interact, **kwargs):
-        if event == "begin" and not config.skipping and not mute_textbox_click: #using "begin" prevents it from playing on the textbox after the phone goes away
+        if event == "begin" and not config.skipping: #using "begin" prevents it from playing on the textbox after the phone goes away
             renpy.play(audio.phone_cont, channel="sound") 
 
-
+    # a data class that includes character name and icon
     class Dragon(object):
         def __init__(self, flags, name, icon):
             self._flags = flags     # dict of flag names to t/f value
@@ -70,34 +71,26 @@ default mcp = Character("mc", kind=nvl,
     callback=phone_continue
 )
 
-
-label nvl_phone(active, clock=None, dr=None):
+# transition may not work properly without an adv line between each scene change and phone text
+label nvl_phone(active, clock=None, dr=None, slide=1, clear_screen=True):
     if active: # turn on phone mode
-        nvl clear
-
+        if clear_screen:
+            nvl clear
         python:
             phone_display_header["phone"] = True
             phone_display_header["clock"] = clock
             phone_display_header["icon"]  = dr.icon
             phone_display_header["name"]  = dr.name
+            phone_display_header["slide"] = slide
 
-            if not debug:
-                config.rollback_enabled = False
-
-        window show 
+        window auto show # (this is REQUIRED to keep the window from trying to hide itself when showing the dialogue menu, etc)
         nvl show
 
     else: # turn off phone mode
-        $ nvl_hide(Pause(0))
-        
-        if rollback_on: 
-            python:
-                if not debug:
-                    renpy.block_rollback()
-                config.rollback_enabled = True
-
+        $ nvl_hide(Pause(0))    # for some reason nvl hide doesn't work but the python nvl_hide() does
         $ phone_display_header["phone"] = False
+        if clear_screen:
+            nvl clear
 
-        nvl clear
-
+    return
         
